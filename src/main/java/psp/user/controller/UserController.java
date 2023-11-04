@@ -2,59 +2,49 @@ package psp.user.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import psp.user.Pagination;
 import psp.user.UniqueConstraintViolationException;
 import psp.user.UserNotFoundException;
 import psp.user.model.User;
-import psp.user.repository.UserRepository;
-
-import java.util.Optional;
+import psp.user.repository.CustomProperties;
+import psp.user.service.UserService;
 
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    UserService userService;
+
+    @Autowired
+    CustomProperties props;
 
     @PostMapping()
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) throws UniqueConstraintViolationException {
-        checkUniqueConstraints(user);
-        try {
-            User _user = userRepository.save(user);
-            return new ResponseEntity<>(_user, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        User _user = userService.saveUser(user);
+        return new ResponseEntity<>(_user, _user != null ? HttpStatus.CREATED : HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<User> addUser(@PathVariable String id) throws UserNotFoundException {
-        UserNotFoundException exception = new UserNotFoundException();
-        exception.setFieldName("Id");
-        exception.setFieldValue(id);
-
-        try {
-            Optional<User> user = userRepository.findById(Long.parseLong(id));
-            if (user.isEmpty()) throw exception;
-            return new ResponseEntity<>(user.get(), HttpStatus.OK);
-        } catch (NumberFormatException e) {
-            throw exception;
-        }
+    public ResponseEntity<User> getUser(@PathVariable String id) throws UserNotFoundException {
+        return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
     }
 
-    private void checkUniqueConstraints(User user) throws UniqueConstraintViolationException {
-        UniqueConstraintViolationException exception = new UniqueConstraintViolationException();
-        if (!userRepository.findByEmail(user.getEmail()).isEmpty())
-            exception.addError("email", "Email address '" + user.getEmail() + "' already exists");
-        if (!userRepository.findByUsername(user.getUsername()).isEmpty())
-            exception.addError("username", "Username '" + user.getUsername() + "' already exists");
-        if (!userRepository.findByPhone(user.getPhone().trim().replaceAll("\\s", "")).isEmpty())
-            exception.addError("phone", "Phone number '" + user.getPhone() + "' already exists");
+    @GetMapping("")
+    public Pagination<User> getUsers(@RequestParam(required = false) String page, @RequestParam(required = false) String limit) {
+        if (page == null) page = "0";
+        if (limit == null) limit = props.getLimit();
 
-        if (!exception.isEmpty())
-            throw exception;
+        Pageable pageable = PageRequest.of(
+                page.matches("\\d+") ? Integer.parseInt(page) : 0,
+                Integer.parseInt(limit.matches("\\d+") ? limit : props.getLimit())
+        );
+
+        return userService.getPaginatedData(pageable);
     }
 }
