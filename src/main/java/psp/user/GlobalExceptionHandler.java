@@ -30,4 +30,12 @@ public class GlobalExceptionHandler {
     public Map<String, String> handleUniqueConstraintViolation(UniqueConstraintViolationException ex) {
         return new HashMap<>(ex.getErrors());
     }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(UserNotFoundException.class)
+    public Map<String, String> handleUserNotFoundException(UserNotFoundException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getFieldName() + " '" + ex.getFieldValue() + "' does not exists");
+        return response;
+    }
 }
