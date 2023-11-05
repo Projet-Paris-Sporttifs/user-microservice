@@ -5,13 +5,13 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import psp.user.model.User;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, Long>, CrudRepository<User, Long> {
 
-    public List<User> findByEmail(String email);
-    public List<User> findByUsername(String email);
-    public List<User> findByPhone(String email);
+    public Optional<User> findByEmail(String email);
+    public Optional<User> findByUsername(String email);
+    public Optional<User> findByPhone(String email);
 
 }

@@ -10,6 +10,6 @@ public class GenderValidator implements ConstraintValidator<GenderValidation, St
 
     public boolean isValid(String value, ConstraintValidatorContext cxt) {
         List<String> list = Arrays.asList("male", "female", "other");
-        return list.contains(value.toLowerCase());
+        return value != null && list.contains(value.toLowerCase());
     }
 }

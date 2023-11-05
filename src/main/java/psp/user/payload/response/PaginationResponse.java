@@ -1,11 +1,11 @@
-package psp.user;
+package psp.user.payload.response;
 
 import lombok.Data;
 
 import java.util.stream.Stream;
 
 @Data
-public class Pagination<T> {
+public class PaginationResponse<T> {
 
     private Stream<T> content;
     private long totalElements;

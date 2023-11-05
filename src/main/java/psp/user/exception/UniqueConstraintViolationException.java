@@ -1,4 +1,4 @@
-package psp.user;
+package psp.user.exception;
 
 import java.util.HashMap;
 import java.util.Map;

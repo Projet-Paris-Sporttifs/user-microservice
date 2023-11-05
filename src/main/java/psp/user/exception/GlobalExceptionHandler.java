@@ -1,4 +1,4 @@
-package psp.user;
+package psp.user.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -36,6 +36,14 @@ public class GlobalExceptionHandler {
     public Map<String, String> handleUserNotFoundException(UserNotFoundException ex) {
         Map<String, String> response = new HashMap<>();
         response.put("message", ex.getFieldName() + " '" + ex.getFieldValue() + "' does not exists");
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(PasswordNotMatchingException.class)
+    public Map<String, String> handlePasswordNotMatchingException(PasswordNotMatchingException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Passwords do not match.");
         return response;
     }
 }

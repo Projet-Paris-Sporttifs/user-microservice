@@ -1,54 +1,59 @@
 package psp.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import psp.user.validator.GenderValidation;
+
+import java.util.Set;
 
 @Data
 @Entity
 @Table(name = "users")
+@AllArgsConstructor
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "Username is mandatory")
-    @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Username is invalid")
-    @Size(max = 50, message = "Username is too long")
-    @Size(min = 5, message = "Username is too short")
+    @Column(nullable = false)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
+
+    @Column(unique = true, nullable = false, length = 50)
     private String username;
 
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "Email is mandatory")
-    @Size(max = 180, message = "Email address is too long")
-    @Email(message = "Email address is invalid")
+    @JsonIgnore
+    @Column(nullable = false, length = 120)
+    private String password;
+
+    @JsonIgnore
+    @Transient
+    private String passwordConfirm;
+
+    @Column(unique = true, nullable = false, length = 250)
     private String email;
 
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "Phone number is mandatory")
-    @Size(max = 18, message = "Phone number is too long")
+    @Column(unique = true, nullable = false, length = 30)
     private String phone;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Gender is mandatory")
-    @GenderValidation
+    @Column(nullable = false, length = 10)
     private String gender;
 
     @Column(nullable = false)
-    @NotBlank(message = "First name is mandatory")
-    @Size(max = 100, message = "First name is too long")
     private String firstname;
 
     @Column(nullable = false)
-    @NotBlank(message = "Last name is mandatory")
-    @Size(max = 100, message = "Last name is too long")
     private String lastname;
+
+    public User() {
+    }
 
     @PrePersist
     public void processData() {

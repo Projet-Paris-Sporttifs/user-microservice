@@ -1,4 +1,4 @@
-package psp.user;
+package psp.user.exception;
 
 import lombok.Getter;
 import lombok.Setter;
