@@ -51,14 +51,13 @@ public class AuthController {
     }
 
     @PostMapping("signup")
-    public ResponseEntity<MessageResponse<User>> signup(@RequestBody @Valid SignUpRequest signUpRequest) {
-        User user = userService.saveUser(
-                new User(null, null, signUpRequest.getUsername(), signUpRequest.getPassword(),
-                        signUpRequest.getPasswordConfirm(), signUpRequest.getEmail(), signUpRequest.getPhone(),
-                        signUpRequest.getGender(), signUpRequest.getFirstname(), signUpRequest.getLastname())
+    public ResponseEntity<MessageResponse> signup(@RequestBody @Valid SignUpRequest signUpRequest) {
+        userService.saveUser(new User(null, null, signUpRequest.getUsername(), signUpRequest.getPassword(),
+                signUpRequest.getPasswordConfirm(), signUpRequest.getEmail(), signUpRequest.getPhone(),
+                signUpRequest.getGender(), signUpRequest.getFirstname(), signUpRequest.getLastname())
         );
 
-        return ResponseEntity.ok(new MessageResponse<>("User registered successfully!", user));
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
 }

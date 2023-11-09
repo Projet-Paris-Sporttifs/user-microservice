@@ -5,9 +5,8 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class MessageResponse<T> {
+public class MessageResponse {
 
     private String message;
 
-    private T data;
 }

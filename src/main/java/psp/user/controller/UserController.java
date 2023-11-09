@@ -38,7 +38,10 @@ public class UserController {
     }
 
     @GetMapping()
-    public PaginationResponse<User> getUsers(@RequestParam(required = false) String page, @RequestParam(required = false) String limit) {
+    public PaginationResponse<User> getUsers(
+            @RequestParam(required = false) String page,
+            @RequestParam(required = false) String limit
+    ) {
         if (page == null) page = "0";
         if (limit == null) limit = props.getPaginationLimit();
 

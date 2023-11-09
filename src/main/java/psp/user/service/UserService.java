@@ -18,7 +18,6 @@ import psp.user.repository.UserRepository;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 @Service
 public class UserService {
@@ -68,10 +67,9 @@ public class UserService {
         Page<User> page = userRepository.findAll(pageable);
 
         PaginationResponse<User> pagination = new PaginationResponse<>();
-        Stream<User> data = page.get();
-        pagination.setContent(data);
+        pagination.setContent(page.get());
         pagination.setPageNumber(page.getNumber());
-        pagination.setPageSize(data.count());
+        pagination.setPageSize(page.get().count());
         pagination.setHasNext(page.hasNext());
         pagination.setTotalElements(page.getTotalElements());
         pagination.setTotalPages(page.getTotalPages());
