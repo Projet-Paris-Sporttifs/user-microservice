@@ -39,11 +39,11 @@ public class GlobalExceptionHandler {
         return response;
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PasswordNotMatchingException.class)
     public Map<String, String> handlePasswordNotMatchingException(PasswordNotMatchingException ex) {
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Passwords do not match.");
+        response.put("password", "Passwords do not match.");
         return response;
     }
 }

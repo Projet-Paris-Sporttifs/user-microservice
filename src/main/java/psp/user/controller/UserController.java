@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import psp.user.payload.request.SignUpRequest;
+import psp.user.payload.response.MessageResponse;
 import psp.user.payload.response.PaginationResponse;
 import psp.user.exception.PasswordNotMatchingException;
 import psp.user.exception.UniqueConstraintViolationException;
@@ -26,13 +28,22 @@ public class UserController {
     CustomProperties props;
 
     @PostMapping()
-    public ResponseEntity<User> addUser(@Valid @RequestBody User user)
+    public ResponseEntity<MessageResponse> addUser(@RequestBody @Valid SignUpRequest signUpRequest)
             throws UniqueConstraintViolationException, PasswordNotMatchingException {
-        User _user = userService.saveUser(user);
-        return new ResponseEntity<>(_user, _user != null ? HttpStatus.CREATED : HttpStatus.INTERNAL_SERVER_ERROR);
+        User user = userService.saveUser(new User(null, null, signUpRequest.getUsername(), signUpRequest.getPassword(),
+                signUpRequest.getPasswordConfirm(), signUpRequest.getEmail(), signUpRequest.getPhone(),
+                signUpRequest.getGender(), signUpRequest.getFirstname(), signUpRequest.getLastname()));
+
+        ResponseEntity<MessageResponse> response;
+
+        if (user != null)
+            response = new ResponseEntity<>(new MessageResponse("User created successfully."), HttpStatus.CREATED);
+        else
+            response = new ResponseEntity<>(new MessageResponse("An error has occurred."), HttpStatus.INTERNAL_SERVER_ERROR);
+        return response;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("{id:[\\d]+}")
     public ResponseEntity<User> getUser(@PathVariable String id) throws UserNotFoundException {
         return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
     }

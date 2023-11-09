@@ -32,7 +32,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User saveUser(User user) throws UniqueConstraintViolationException, PasswordNotMatchingException {
-        UniqueConstraintViolationException exception = new UniqueConstraintViolationException();
+        final UniqueConstraintViolationException exception = new UniqueConstraintViolationException();
         userRepository.findByEmail(user.getEmail()).ifPresent(
                 (value) -> exception.addError("email", "Email address '" + user.getEmail() + "' already exists")
         );
