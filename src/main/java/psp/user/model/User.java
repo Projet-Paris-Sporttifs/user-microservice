@@ -19,7 +19,6 @@ public class User {
     private Long id;
 
     @JsonIgnore
-    @Column(nullable = false)
     @ManyToMany
     @JoinTable(
             name = "users_roles",

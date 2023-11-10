@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import psp.user.payload.response.MessageResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,10 +34,8 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)
-    public Map<String, String> handleUserNotFoundException(UserNotFoundException ex) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", ex.getFieldName() + " '" + ex.getFieldValue() + "' does not exists");
-        return response;
+    public MessageResponse handleUserNotFoundException(UserNotFoundException ex) {
+        return new MessageResponse(ex.getFieldName() + " '" + ex.getFieldValue() + "' does not exists");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -45,5 +44,11 @@ public class GlobalExceptionHandler {
         Map<String, String> response = new HashMap<>();
         response.put("password", "Passwords do not match.");
         return response;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(PaginationParamsException.class)
+    public MessageResponse handlePaginationParamsException(PaginationParamsException ex) {
+        return new MessageResponse("Pagination parameters are invalid.");
     }
 }

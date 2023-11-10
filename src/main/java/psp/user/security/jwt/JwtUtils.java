@@ -26,12 +26,10 @@ public class JwtUtils {
 
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userPrincipal.getAuthorities().stream().map(item -> item.getAuthority()).toList();
         return Jwts.builder()
                 .claims()
-                .add("roles", roles)
                 .add("email", userPrincipal.getEmail())
-                .add("id", userPrincipal.getEmail())
+                .add("id", userPrincipal.getId())
                 .and()
                 .subject(userPrincipal.getUsername())
                 .issuedAt(new Date())

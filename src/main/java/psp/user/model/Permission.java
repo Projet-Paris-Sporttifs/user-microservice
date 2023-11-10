@@ -3,10 +3,11 @@ package psp.user.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Collection;
+import java.util.Set;
 
 @Data
 @Entity
+@Table(name = "permissions")
 public class Permission {
 
     @Id
@@ -18,10 +19,8 @@ public class Permission {
     private EPermission name;
 
     @ManyToMany(mappedBy = "permissions")
-    private Collection<Role> roles;
+    private Set<Role> roles;
 
-    public Permission(EPermission name) {
-        this.name = name;
-    }
-
+    @Column(unique = true, nullable = false)
+    private String displayName;
 }

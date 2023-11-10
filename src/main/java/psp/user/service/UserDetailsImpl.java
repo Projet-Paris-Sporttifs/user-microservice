@@ -1,6 +1,5 @@
 package psp.user.service;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +21,6 @@ public class UserDetailsImpl implements UserDetails {
 
     private String email;
 
-    @JsonIgnore
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
@@ -57,7 +55,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = getGrantedAuthorities(getPrivileges(user.getRoles()));
+        List<GrantedAuthority> authorities = getGrantedAuthorities(user.getRoles());
         return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities);
     }
 
@@ -88,7 +86,8 @@ public class UserDetailsImpl implements UserDetails {
         return permissions;
     }
 
-    private static List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+    private static List<GrantedAuthority> getGrantedAuthorities(Set<Role> roles) {
+        List<String> privileges = getPrivileges(roles);
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (String privilege : privileges) {
             authorities.add(new SimpleGrantedAuthority(privilege));
