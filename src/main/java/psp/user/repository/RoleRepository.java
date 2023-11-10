@@ -12,4 +12,6 @@ public interface RoleRepository extends CrudRepository<Role, Long> {
 
     Optional<Role> findByName(ERole name);
 
+    Role save(ERole permission);
+
 }

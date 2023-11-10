@@ -6,12 +6,11 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import psp.user.model.Permission;
+import psp.user.model.Role;
 import psp.user.model.User;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Getter
 @Setter
@@ -58,10 +57,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRoles()
-                .stream().map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
-
+        List<GrantedAuthority> authorities = getGrantedAuthorities(getPrivileges(user.getRoles()));
         return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities);
     }
 
@@ -79,4 +75,24 @@ public class UserDetailsImpl implements UserDetails {
         return Objects.equals(id, user.id);
     }
 
+    private static List<String> getPrivileges(Set<Role> roles) {
+        List<String> permissions = new ArrayList<>();
+        List<Permission> collection = new ArrayList<>();
+        for (Role role : roles) {
+            permissions.add(role.getName().name());
+            collection.addAll(role.getPermissions());
+        }
+        for (Permission item : collection) {
+            permissions.add(item.getName().name());
+        }
+        return permissions;
+    }
+
+    private static List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String privilege : privileges) {
+            authorities.add(new SimpleGrantedAuthority(privilege));
+        }
+        return authorities;
+    }
 }

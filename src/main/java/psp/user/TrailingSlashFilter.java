@@ -19,11 +19,8 @@ import java.io.IOException;
 public class TrailingSlashFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         if (request.getRequestURI().endsWith("/")) {
             ServletUriComponentsBuilder builder = ServletUriComponentsBuilder.fromRequest(request);
             String path = builder.build().getPath();

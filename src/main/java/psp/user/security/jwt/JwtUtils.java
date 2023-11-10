@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 import psp.user.service.UserDetailsImpl;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class JwtUtils {
@@ -28,23 +26,18 @@ public class JwtUtils {
 
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userPrincipal.getAuthorities().stream().map(item -> item.getAuthority()).toList();
         return Jwts.builder()
                 .claims()
+                .add("roles", roles)
+                .add("email", userPrincipal.getEmail())
+                .add("id", userPrincipal.getEmail())
+                .and()
                 .subject(userPrincipal.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .add(additionalClaims(userPrincipal))
-                .and()
                 .signWith(key(), Jwts.SIG.HS512)
                 .compact();
-    }
-
-    private Map<String, String> additionalClaims(UserDetailsImpl userDetails) {
-        Map<String, String> data = new HashMap<>();
-        data.put("email", userDetails.getEmail());
-        data.put("id", userDetails.getId().toString());
-        data.put("roles", userDetails.getAuthorities().toString());
-        return data;
     }
 
     private SecretKey key() {

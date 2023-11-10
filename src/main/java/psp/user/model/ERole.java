@@ -2,7 +2,7 @@ package psp.user.model;
 
 public enum ERole {
 
-    ROLE_MODERATOR,
+    ROLE_SUPERADMIN,
     ROLE_USER,
     ROLE_ADMIN
 

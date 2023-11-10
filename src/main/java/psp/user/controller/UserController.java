@@ -32,7 +32,7 @@ public class UserController {
             throws UniqueConstraintViolationException, PasswordNotMatchingException {
         User user = userService.saveUser(new User(null, null, signUpRequest.getUsername(), signUpRequest.getPassword(),
                 signUpRequest.getPasswordConfirm(), signUpRequest.getEmail(), signUpRequest.getPhone(),
-                signUpRequest.getGender(), signUpRequest.getFirstname(), signUpRequest.getLastname()));
+                signUpRequest.getGender(), signUpRequest.getFirstname(), signUpRequest.getLastname(), null, null));
 
         ResponseEntity<MessageResponse> response;
 

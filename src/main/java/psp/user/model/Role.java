@@ -10,9 +10,6 @@ import java.util.Set;
 @Table(name = "roles")
 public class Role {
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    Set<User> users;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +17,17 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true, length = 30)
     private ERole name;
+
+    @ManyToMany(mappedBy = "roles")
+    Set<User> users;
+
+    @ManyToMany
+    @JoinTable(
+            name = "roles_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions;
 
     public Role() {
 

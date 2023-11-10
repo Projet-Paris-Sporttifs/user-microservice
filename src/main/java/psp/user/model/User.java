@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -17,10 +18,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @Column(nullable = false)
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
-            name = "user_role",
+            name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
@@ -46,11 +48,19 @@ public class User {
     @Column(nullable = false, length = 10)
     private String gender;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 250)
     private String firstname;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 250)
     private String lastname;
+
+    @JsonIgnore
+    @Column(nullable = false)
+    private Date createdAt;
+
+    @JsonIgnore
+    @Column(nullable = false)
+    private Date updatedAt;
 
     public User() {
     }
@@ -60,5 +70,10 @@ public class User {
         setPhone(getPhone().replaceAll("\\s", ""));
         setFirstname(getFirstname().trim().replaceAll("\\s+", " "));
         setLastname(getLastname().trim().replaceAll("\\s+", " "));
+
+        if (createdAt == null)
+            createdAt = new Date();
+
+        updatedAt = new Date();
     }
 }
