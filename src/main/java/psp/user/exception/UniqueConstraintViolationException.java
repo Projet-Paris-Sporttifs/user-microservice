@@ -1,21 +1,17 @@
 package psp.user.exception;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class UniqueConstraintViolationException extends  RuntimeException {
+@Getter
+public class UniqueConstraintViolationException extends RuntimeException {
 
-    Map<String, String> errors = new HashMap<>();
+    private final String fieldName;
 
-    public void addError(String k, String v) {
-        errors.put(k, v);
-    }
-
-    public Map<String, String> getErrors() {
-        return errors;
-    }
-
-    public boolean isEmpty() {
-        return errors.isEmpty();
+    public UniqueConstraintViolationException(String fieldName, String message) {
+        super(message);
+        this.fieldName = fieldName;
     }
 }

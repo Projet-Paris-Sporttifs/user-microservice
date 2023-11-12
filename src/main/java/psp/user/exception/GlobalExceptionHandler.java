@@ -29,7 +29,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UniqueConstraintViolationException.class)
     public Map<String, String> handleUniqueConstraintViolation(UniqueConstraintViolationException ex) {
-        return new HashMap<>(ex.getErrors());
+        Map<String, String> error = new HashMap<>();
+        error.put(ex.getFieldName(), ex.getMessage());
+        return error;
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

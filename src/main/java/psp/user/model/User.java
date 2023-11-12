@@ -5,8 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -25,7 +24,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles;
+    private Collection<Role> roles;
 
     @Column(unique = true, nullable = false, length = 50)
     private String username;

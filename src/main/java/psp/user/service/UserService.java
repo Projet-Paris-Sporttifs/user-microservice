@@ -32,19 +32,12 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User saveUser(User user) throws UniqueConstraintViolationException, PasswordNotMatchingException {
-        final UniqueConstraintViolationException exception = new UniqueConstraintViolationException();
-        userRepository.findByEmail(user.getEmail()).ifPresent(
-                (value) -> exception.addError("email", "Email address '" + user.getEmail() + "' already exists")
-        );
-        userRepository.findByUsername(user.getUsername()).ifPresent(
-                (value) -> exception.addError("username", "Username '" + user.getUsername() + "' already exists")
-        );
-        userRepository.findByPhone(user.getPhone().trim().replaceAll("\\s", "")).ifPresent(
-                (value) -> exception.addError("phone", "Phone number '" + user.getPhone() + "' already exists")
-        );
-
-        if (!exception.isEmpty())
-            throw exception;
+        if (userRepository.findByEmail(user.getEmail()) != null)
+            throw new UniqueConstraintViolationException("email", "Email address '" + user.getEmail() + "' already exists");
+        if (userRepository.findByUsername(user.getUsername()) != null)
+            throw new UniqueConstraintViolationException("username", "Username '" + user.getUsername() + "' already exists");
+        if (userRepository.findByPhone(user.getPhone().trim().replaceAll("\\s", "")) != null)
+           throw new UniqueConstraintViolationException("phone", "Phone number '" + user.getPhone() + "' already exists");
 
         if (!user.getPassword().equals(user.getPasswordConfirm()))
             throw new PasswordNotMatchingException();

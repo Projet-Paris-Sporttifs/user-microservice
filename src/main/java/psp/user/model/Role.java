@@ -1,12 +1,17 @@
 package psp.user.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @Table(name = "roles")
 public class Role {
 
@@ -18,23 +23,15 @@ public class Role {
     @Column(nullable = false, unique = true, length = 30)
     private ERole name;
 
-    @ManyToMany(mappedBy = "roles")
-    Set<User> users;
-
     @ManyToMany
     @JoinTable(
             name = "roles_permissions",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
-    private Set<Permission> permissions;
-
-    public Role() {
-
-    }
+    private Set<Permission> permissions = new HashSet<>();
 
     public Role(ERole name) {
         this.name = name;
     }
-
 }

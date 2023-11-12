@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import psp.user.exception.PaginationParamsException;
 import psp.user.payload.response.PaginationResponse;
@@ -23,11 +24,13 @@ public class UserController {
     @Autowired
     CustomProperties props;
 
+    @Secured({"ROLE_ADMIN", "ROLE_MODERATOR"})
     @GetMapping("{id:[\\d]+}")
     public ResponseEntity<User> getUser(@PathVariable String id) throws UserNotFoundException {
         return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_MODERATOR"})
     @GetMapping
     public PaginationResponse<User> getUsers(
             @RequestParam(required = false) String page,

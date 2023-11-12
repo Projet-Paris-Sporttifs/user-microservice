@@ -55,7 +55,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = getGrantedAuthorities(user.getRoles());
+        Collection<GrantedAuthority> authorities = getGrantedAuthorities(user.getRoles());
         return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities);
     }
 
@@ -73,9 +73,9 @@ public class UserDetailsImpl implements UserDetails {
         return Objects.equals(id, user.id);
     }
 
-    private static List<String> getPrivileges(Set<Role> roles) {
-        List<String> permissions = new ArrayList<>();
-        List<Permission> collection = new ArrayList<>();
+    private static Collection<String> getPermissions(Collection<Role> roles) {
+        Collection<String> permissions = new ArrayList<>();
+        Collection<Permission> collection = new ArrayList<>();
         for (Role role : roles) {
             permissions.add(role.getName().name());
             collection.addAll(role.getPermissions());
@@ -86,10 +86,10 @@ public class UserDetailsImpl implements UserDetails {
         return permissions;
     }
 
-    private static List<GrantedAuthority> getGrantedAuthorities(Set<Role> roles) {
-        List<String> privileges = getPrivileges(roles);
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (String privilege : privileges) {
+    private static Collection<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
+        Collection<String> permissions = getPermissions(roles);
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        for (String privilege : permissions) {
             authorities.add(new SimpleGrantedAuthority(privilege));
         }
         return authorities;

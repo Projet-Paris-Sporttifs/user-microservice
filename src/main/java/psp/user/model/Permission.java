@@ -3,6 +3,7 @@ package psp.user.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -15,11 +16,8 @@ public class Permission {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true, length = 70)
+    @Column(nullable = false, unique = true, length = 60)
     private EPermission name;
-
-    @ManyToMany(mappedBy = "permissions")
-    private Set<Role> roles;
 
     @Column(unique = true, nullable = false)
     private String displayName;

@@ -10,6 +10,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,6 +25,7 @@ import psp.user.service.UserDetailsServiceImpl;
 
 @EnableWebSecurity
 @Configuration
+@EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
     @Autowired
@@ -79,7 +81,7 @@ public class WebSecurityConfig {
     @Bean
     public static RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
-        hierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER\nROLE_MODERATOR > ROLE_USER");
+        hierarchy.setHierarchy("ROLE_ADMIN > ROLE_MODERATOR\nROLE_MODERATOR > ROLE_USER");
         return hierarchy;
     }
 
