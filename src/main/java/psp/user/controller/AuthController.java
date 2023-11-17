@@ -41,7 +41,7 @@ public class AuthController {
 
     @PostMapping("signup")
     public ResponseEntity<MessageResponse> signup(@RequestBody @Valid SignUpRequest signUpRequest) {
-        User user = userService.saveUser(new User(null, null, signUpRequest.getUsername(), signUpRequest.getPassword(),
+        userService.saveUser(new User(null, null, signUpRequest.getUsername(), signUpRequest.getPassword(),
                 signUpRequest.getPasswordConfirm(), signUpRequest.getEmail(), signUpRequest.getPhone(),
                 signUpRequest.getGender(), signUpRequest.getFirstname(), signUpRequest.getLastname(), null, null)
         );

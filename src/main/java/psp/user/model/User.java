@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.*;
 
 @Data
 @Entity
+@DynamicUpdate
 @Table(name = "users")
 @AllArgsConstructor
 public class User {
@@ -64,13 +66,20 @@ public class User {
     }
 
     @PrePersist
-    public void processData() {
+    public void setCreationDate() {
         setPhone(getPhone().replaceAll("\\s", ""));
         setFirstname(getFirstname().trim().replaceAll("\\s+", " "));
         setLastname(getLastname().trim().replaceAll("\\s+", " "));
 
-        if (createdAt == null)
-            createdAt = new Date();
+        updatedAt = new Date();
+        createdAt = new Date();
+    }
+
+    @PreUpdate
+    public void processData() {
+        setPhone(getPhone().replaceAll("\\s", ""));
+        setFirstname(getFirstname().trim().replaceAll("\\s+", " "));
+        setLastname(getLastname().trim().replaceAll("\\s+", " "));
 
         updatedAt = new Date();
     }

@@ -53,4 +53,12 @@ public class GlobalExceptionHandler {
     public MessageResponse handlePaginationParamsException(PaginationParamsException ex) {
         return new MessageResponse("Pagination parameters are invalid.");
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(UpdateValidationException.class)
+    public Map<String, String> handleUpdateValidationException(UpdateValidationException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put(ex.getFieldName(), ex.getMessage());
+        return response;
+    }
 }

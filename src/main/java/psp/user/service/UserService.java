@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import psp.user.dto.UserDto;
+import psp.user.exception.UpdateValidationException;
 import psp.user.model.ERole;
 import psp.user.model.Role;
 import psp.user.payload.response.PaginationResponse;
@@ -32,12 +34,15 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User saveUser(User user) throws UniqueConstraintViolationException, PasswordNotMatchingException {
-        if (userRepository.findByEmail(user.getEmail()) != null)
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new UniqueConstraintViolationException("email", "Email address '" + user.getEmail() + "' already exists");
-        if (userRepository.findByUsername(user.getUsername()) != null)
+        }
+        if (userRepository.existsByUsername(user.getUsername())) {
             throw new UniqueConstraintViolationException("username", "Username '" + user.getUsername() + "' already exists");
-        if (userRepository.findByPhone(user.getPhone().trim().replaceAll("\\s", "")) != null)
-           throw new UniqueConstraintViolationException("phone", "Phone number '" + user.getPhone() + "' already exists");
+        }
+        if (userRepository.existsByPhone(user.getPhone().trim().replaceAll("\\s", ""))) {
+            throw new UniqueConstraintViolationException("phone", "Phone number '" + user.getPhone() + "' already exists");
+        }
 
         if (!user.getPassword().equals(user.getPasswordConfirm()))
             throw new PasswordNotMatchingException();
@@ -73,7 +78,7 @@ public class UserService {
     }
 
     public User findUserById(String id) {
-        UserNotFoundException exception = new UserNotFoundException();
+        final UserNotFoundException exception = new UserNotFoundException();
         exception.setFieldName("Id");
         exception.setFieldValue(id);
 
@@ -84,5 +89,39 @@ public class UserService {
         } catch (NumberFormatException e) {
             throw exception;
         }
+    }
+
+    public User updateUser(User user, UserDto dto) {
+        if (userRepository.existsByEmailAndNotExcludedUserId(user.getEmail(), user.getId())) {
+            throw new UniqueConstraintViolationException("email", "Email address '" + user.getEmail() + "' already exists.");
+        }
+        if (userRepository.existsByUsernameAndNotExcludedUserId(user.getUsername(), user.getId())) {
+            throw new UniqueConstraintViolationException("username", "User name '" + user.getUsername() + "' already exists.");
+        }
+        if (userRepository.existsByPhoneAndNotExcludedUserId(user.getPhone().trim().replaceAll("\\s", ""), user.getId())) {
+            throw new UniqueConstraintViolationException(
+                    "phone",
+                    "Phone number '" + user.getPhone() + "' already exists."
+            );
+        }
+
+        if (dto.getPassword() != null) {
+            if (dto.getPasswordConfirm() == null) {
+                throw new UpdateValidationException("passwordConfirm", "Password confirmation is mandatory.");
+            }
+
+            if (!dto.getPassword().equals(dto.getPasswordConfirm())) {
+                throw new PasswordNotMatchingException();
+            }
+
+            if (!dto.getPassword().matches("^(?=.*[0-9])(?=.*[A-Za-z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$")) {
+                throw new UpdateValidationException("password", "Invalid password. The password must contains at least 8 characters, "
+                        + "including one letter, one digit, and one special character (@#$%^&+=!).");
+            }
+
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
+        return userRepository.save(user);
     }
 }
