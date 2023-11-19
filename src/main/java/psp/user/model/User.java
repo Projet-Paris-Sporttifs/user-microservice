@@ -2,9 +2,11 @@ package psp.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.annotations.DynamicUpdate;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.*;
 
 import java.util.*;
 
@@ -12,7 +14,10 @@ import java.util.*;
 @Entity
 @DynamicUpdate
 @Table(name = "users")
+@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id=?")
+@Where(clause = "deleted = false")
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -45,7 +50,7 @@ public class User {
     @Column(unique = true, nullable = false, length = 30)
     private String phone;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 6)
     private String gender;
 
     @Column(nullable = false, length = 250)
@@ -62,25 +67,25 @@ public class User {
     @Column(nullable = false)
     private Date updatedAt;
 
-    public User() {
-    }
+    @JsonIgnore
+    private boolean deleted = Boolean.FALSE;
 
     @PrePersist
-    public void setCreationDate() {
-        setPhone(getPhone().replaceAll("\\s", ""));
-        setFirstname(getFirstname().trim().replaceAll("\\s+", " "));
-        setLastname(getLastname().trim().replaceAll("\\s+", " "));
-
+    public void onCreate() {
+        processData();
         updatedAt = new Date();
         createdAt = new Date();
     }
 
     @PreUpdate
-    public void processData() {
+    public void onUpdate() {
+        processData();
+        updatedAt = new Date();
+    }
+
+    private void processData() {
         setPhone(getPhone().replaceAll("\\s", ""));
         setFirstname(getFirstname().trim().replaceAll("\\s+", " "));
         setLastname(getLastname().trim().replaceAll("\\s+", " "));
-
-        updatedAt = new Date();
     }
 }

@@ -61,4 +61,12 @@ public class GlobalExceptionHandler {
         response.put(ex.getFieldName(), ex.getMessage());
         return response;
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class)
+    public Map<String, String> handleBadRequestException(BadRequestException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+        return response;
+    }
 }

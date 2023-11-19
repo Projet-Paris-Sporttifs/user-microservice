@@ -17,9 +17,7 @@ import psp.user.model.User;
 import psp.user.repository.RoleRepository;
 import psp.user.repository.UserRepository;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -33,7 +31,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User saveUser(User user) throws UniqueConstraintViolationException, PasswordNotMatchingException {
+    public User saveUser(final User user) throws UniqueConstraintViolationException, PasswordNotMatchingException {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new UniqueConstraintViolationException("email", "Email address '" + user.getEmail() + "' already exists");
         }
@@ -63,10 +61,10 @@ public class UserService {
         }
     }
 
-    public PaginationResponse<User> getPaginatedData(Pageable pageable) {
-        Page<User> page = userRepository.findAll(pageable);
+    public PaginationResponse<User> getPaginatedData(final Pageable pageable) {
+        final Page<User> page = userRepository.findAll(pageable);
 
-        PaginationResponse<User> pagination = new PaginationResponse<>();
+        final PaginationResponse<User> pagination = new PaginationResponse<>();
         pagination.setContent(page.get());
         pagination.setPageNumber(page.getNumber());
         pagination.setPageSize(page.get().count());
@@ -77,21 +75,18 @@ public class UserService {
         return pagination;
     }
 
-    public User findUserById(String id) {
-        final UserNotFoundException exception = new UserNotFoundException();
-        exception.setFieldName("Id");
-        exception.setFieldValue(id);
-
-        try {
-            Optional<User> user = userRepository.findById(Long.parseLong(id));
-            if (user.isEmpty()) throw exception;
-            return user.get();
-        } catch (NumberFormatException e) {
+    public User findUserById(Long id) {
+        final Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            final UserNotFoundException exception = new UserNotFoundException();
+            exception.setFieldName("Id");
+            exception.setFieldValue(id.toString());
             throw exception;
         }
+        return user.get();
     }
 
-    public User updateUser(User user, UserDto dto) {
+    public User updateUser(final User user, final UserDto dto) {
         if (userRepository.existsByEmailAndNotExcludedUserId(user.getEmail(), user.getId())) {
             throw new UniqueConstraintViolationException("email", "Email address '" + user.getEmail() + "' already exists.");
         }
@@ -104,6 +99,14 @@ public class UserService {
                     "Phone number '" + user.getPhone() + "' already exists."
             );
         }
+
+        final List<String> genders = Arrays.asList("male", "female", "other");
+
+        if (!genders.contains(user.getGender().toLowerCase())) {
+            throw new UpdateValidationException("gender", "Gender must be male, female or other");
+        }
+
+        user.setGender(user.getGender().toLowerCase());
 
         if (dto.getPassword() != null) {
             if (dto.getPasswordConfirm() == null) {
@@ -123,5 +126,9 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    public void removeUser(final Long id) {
+        userRepository.deleteById(id);
     }
 }
