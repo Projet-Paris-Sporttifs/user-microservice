@@ -13,7 +13,7 @@ import psp.user.service.UserDetailsImpl;
 import psp.user.service.UserService;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/users/account")
 public class AccountController {
 
     @Autowired
