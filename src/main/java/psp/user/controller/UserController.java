@@ -16,7 +16,7 @@ import psp.user.repository.CustomProperties;
 import psp.user.service.UserService;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired

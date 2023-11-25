@@ -1,8 +1,6 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
-
-ENV PORT 8181
 
 EXPOSE 8181
 

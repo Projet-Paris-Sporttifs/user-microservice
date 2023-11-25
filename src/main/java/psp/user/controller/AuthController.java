@@ -17,7 +17,7 @@ import psp.user.security.jwt.JwtUtils;
 import psp.user.service.UserService;
 
 @RestController
-@RequestMapping("/api/v1/users/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
