@@ -2,7 +2,7 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-EXPOSE 8181
+EXPOSE 8080
 
 ARG JAR_FILE=target/*.jar
 
