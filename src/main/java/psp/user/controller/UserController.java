@@ -3,11 +3,9 @@ package psp.user.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import psp.user.exception.BadRequestException;
 import psp.user.exception.PaginationParamsException;
 import psp.user.payload.response.PaginationResponse;
 import psp.user.exception.UserNotFoundException;
@@ -27,12 +25,8 @@ public class UserController {
 
     @Secured({"ROLE_ADMIN", "ROLE_MODERATOR"})
     @GetMapping("{id:[\\d]+}")
-    public ResponseEntity<User> getUser(@PathVariable final String id) throws UserNotFoundException {
-        try {
-            return new ResponseEntity<>(userService.findUserById(Long.parseLong(id)), HttpStatus.OK);
-        } catch (NumberFormatException e) {
-            throw new BadRequestException("Invalid ID");
-        }
+    public ResponseEntity<User> getUser(@PathVariable final Long id) throws UserNotFoundException {
+        return ResponseEntity.ok(userService.findUserById(id));
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_MODERATOR"})
